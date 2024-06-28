@@ -74,6 +74,8 @@ pub trait ObjectiveTrait {
         (f_0, grad)
     }
     fn gradient_type(&self) -> usize {return 1}  // manual diff = 0, finite diff = 1
+
+    fn name(&self) -> &str;
 }
 
 
@@ -109,6 +111,9 @@ impl ObjectiveTrait for MatchEEPosiDoF {
     fn call_lite(&self, x: &[f64], v: &vars::RelaxedIKVars, ee_poses: &Vec<(nalgebra::Vector3<f64>, nalgebra::UnitQuaternion<f64>)>) -> f64 {
         let x_val = ( ee_poses[self.arm_idx].0 - v.goal_positions[self.arm_idx] ).norm();
         groove_loss(x_val, 0., 2, 0.1, 10.0, 2)
+    }
+    fn name(&self) -> &str {
+        "MatchEEPosiDoF"
     }
 }
 
@@ -153,6 +158,10 @@ impl ObjectiveTrait for MatchEERotaDoF {
         let x_val = ( ee_poses[self.arm_idx].0 - v.goal_positions[self.arm_idx] ).norm();
         groove_loss(x_val, 0., 2, 0.1, 10.0, 2)
     }
+
+    fn name(&self) -> &str {
+        "MatchEERotaDoF"
+    }
 }
 
 pub struct SelfCollision {
@@ -194,6 +203,9 @@ impl ObjectiveTrait for SelfCollision {
     fn call_lite(&self, x: &[f64], v: &vars::RelaxedIKVars, ee_poses: &Vec<(nalgebra::Vector3<f64>, nalgebra::UnitQuaternion<f64>)>) -> f64 {
         let x_val = 1.0; // placeholder
         groove_loss(x_val, 0., 2, 2.1, 0.0002, 4)
+    }
+    fn name(&self) -> &str {
+        "SelfCollision"
     }
 }
 
@@ -264,6 +276,10 @@ impl ObjectiveTrait for MaximizeManipulability {
     fn call_lite(&self, x: &[f64], v: &vars::RelaxedIKVars, ee_poses: &Vec<(nalgebra::Vector3<f64>, nalgebra::UnitQuaternion<f64>)>) -> f64 {
         0.0
     }
+
+    fn name(&self) -> &str {
+        "MaximizeManipulability"
+    }
 }
 pub struct EachJointLimits{
     pub joint_idx: usize
@@ -285,6 +301,9 @@ impl ObjectiveTrait for EachJointLimits {
     fn call_lite(&self, x: &[f64], v: &vars::RelaxedIKVars, ee_poses: &Vec<(nalgebra::Vector3<f64>, nalgebra::UnitQuaternion<f64>)>) -> f64 {
         0.0
     }
+    fn name(&self) -> &str {
+        "EachJointlimits"
+    }
 }
 
 pub struct MinimizeVelocity;
@@ -305,6 +324,9 @@ impl ObjectiveTrait for MinimizeVelocity {
         }
         x_val = x_val.sqrt();
         groove_loss(x_val, 0.0, 2, 0.1, 10.0, 2)
+    }
+    fn name(&self) -> &str {
+        "MinimizeVelocity"
     }
 }
 
@@ -330,6 +352,9 @@ impl ObjectiveTrait for MinimizeAcceleration {
         }
         x_val = x_val.sqrt();
         groove_loss(x_val, 0.0, 2, 0.1, 10.0, 2)
+    }
+    fn name(&self) -> &str {
+        "MinimizeAcceleration"
     }
 }
 
@@ -362,6 +387,10 @@ impl ObjectiveTrait for MinimizeJerk {
         x_val = x_val.sqrt();
         groove_loss(x_val, 0.0, 2, 0.1, 10.0, 2)
     }
+
+    fn name(&self) -> &str {
+        "MinimizeJerk"
+    }
 }
 
 
@@ -382,6 +411,10 @@ impl ObjectiveTrait for MatchEEPosGoals {
     fn call_lite(&self, x: &[f64], v: &vars::RelaxedIKVars, ee_poses: &Vec<(nalgebra::Vector3<f64>, nalgebra::UnitQuaternion<f64>)>) -> f64 {
         let x_val = ( ee_poses[self.arm_idx].0 - v.goal_positions[self.arm_idx] ).norm();
         groove_loss(x_val, 0., 2, 0.1, 10.0, 2)
+    }
+
+    fn name(&self) -> &str {
+        "MatchEEPosGoals"
     }
 }
 
@@ -413,5 +446,9 @@ impl ObjectiveTrait for MatchEEQuatGoals {
         let disp2 = angle_between_quaternion(v.goal_quats[self.arm_idx], ee_quat2);
         let x_val = disp.min(disp2);
         groove_loss(x_val, 0., 2, 0.1, 10.0, 2)
+    }
+
+    fn name(&self) -> &str {
+        "MatchEEQuatGoals"
     }
 }
