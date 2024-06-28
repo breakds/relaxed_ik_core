@@ -133,7 +133,7 @@ impl Arm{
 
         let mut pt: nalgebra::Vector3<f64> = nalgebra::Vector3::new(0.,0.,0.);
         let mut rot_quat = nalgebra::UnitQuaternion::identity();
-       
+
         out_positions.push(pt);
         out_rot_quats.push(rot_quat);
 
@@ -203,6 +203,19 @@ impl Arm{
         (out_positions, out_rot_quats)
     }
 
+    /// Computes the Jacobian matrix for the given joint positions.
+    ///
+    /// To be more specific, it is the gradients of the end effector pose w.r.t.
+    /// the given joint positions.
+    ///
+    /// # Parameters
+    /// - `x`: A slice of `f64` representing the joint angles or positions.
+    ///
+    /// # Returns
+    /// - A `DMatrix<f64>` representing the Jacobian matrix.
+    ///
+    /// The function calculates the Jacobian matrix using the positions
+    /// and orientations of the joints and end-effector.
     pub fn get_jacobian_immutable(&self, x: &[f64]) -> DMatrix<f64> {
         let (joint_positions, joint_rot_quats) = self.get_frames_immutable(x);
 
@@ -235,7 +248,7 @@ impl Arm{
                     p_axis = joint_rot_quats[i] * neg_y
                 } else if self.__is_neg_z[joint_idx] {
                     p_axis = joint_rot_quats[i] * neg_z
-                } 
+                }
 
                 let linear = p_axis.cross(&disp);
                 jacobian.set_column(joint_idx, & Vector6::new( linear.x, linear.y, linear.z,
@@ -248,6 +261,22 @@ impl Arm{
         jacobian
     }
 
+    /// Computes the manipulability measure for the given joint positions.
+    ///
+    /// # Parameters
+    /// - `x`: A slice of `f64` representing the joint angles or positions.
+    ///
+    /// # Returns
+    /// - A `f64` value representing the manipulability measure. A higher value
+    /// indicates better manipulability.
+    ///
+    /// # Remarks
+    /// The function calculates the manipulability by taking the determinant of
+    /// the product of the Jacobian matrix and its transpose, then taking the
+    /// square root of the determinant. If the determinant is slightly negative
+    /// due to numerical errors, resulting in NaN from the square root, this
+    /// indicates that the robot is at a singularity point where it loses one or
+    /// more degrees of freedom.
     pub fn get_manipulability_immutable(&self, x: &[f64]) -> f64 {
         let jacobian = self.get_jacobian_immutable(x);
         (jacobian.clone() * jacobian.transpose()).determinant().sqrt()
