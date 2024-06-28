@@ -8,7 +8,7 @@ use crate::relaxed_ik_lib::utils_rust::file_utils::{*};
 fn main() {
     // initilize relaxed ik
     let path_to_src = get_path_to_src();
-    let default_path_to_setting = path_to_src +  "configs/settings.yaml";
+    let default_path_to_setting = path_to_src +  "configs/example_settings/wx250s.yaml";
     let mut relaxed_ik = relaxed_ik::RelaxedIK::load_settings(default_path_to_setting.as_str());
 
     for i in 0..10{
