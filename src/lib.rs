@@ -6,16 +6,34 @@ pub mod relaxed_ik_wrapper;
 pub mod relaxed_ik_web;
 
 use pyo3::prelude::*;
+use pyo3::types::PyTuple;
+use numpy::{PyArray1, ToPyArray};
 
-/// Formats the sum of two numbers as string.
-#[pyfunction]
-fn sum_as_string(a: usize, b: usize) -> PyResult<String> {
-    Ok((a + b).to_string())
+#[pyclass]
+struct RelaxedIK {
+    inner: relaxed_ik::RelaxedIK,
 }
 
-#[pyfunction]
-fn get_path_to_src() -> PyResult<String> {
-    Ok(utils_rust::file_utils::get_path_to_src())
+#[pymethods]
+impl RelaxedIK {
+    #[new]
+    fn new(path_to_setting: &str) -> Self {
+        RelaxedIK{inner: relaxed_ik::RelaxedIK::load_settings(path_to_setting)}
+    }
+
+    // Note that the lifetime annotation `'py` ensures that the returned tuple
+    // is correctly associated with the Python interpreter's lifetime.
+    
+    #[getter]
+    fn get_current_goal<'py>(&self, py: Python<'py>) -> PyResult<&'py PyTuple> {
+        let position = self.inner.vars.goal_positions[0];
+        let quaternion = self.inner.vars.goal_quats[0];
+
+        let position_array = PyArray1::from_vec(py, vec![position.x, position.y, position.z]);
+        let quaternion_array = PyArray1::from_vec(py, vec![quaternion.w, quaternion.i, quaternion.j, quaternion.k]);
+
+        Ok(PyTuple::new(py, &[position_array, quaternion_array]))
+    }    
 }
 
 /// A Python module implemented in Rust. The name of this function must match
@@ -23,7 +41,6 @@ fn get_path_to_src() -> PyResult<String> {
 /// import the module.
 #[pymodule]
 fn relaxed_ik_lib(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    m.add_function(wrap_pyfunction!(sum_as_string, m)?)?;
-    m.add_function(wrap_pyfunction!(get_path_to_src, m)?)?;
+    m.add_class::<RelaxedIK>()?;
     Ok(())
 }
