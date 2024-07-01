@@ -1,6 +1,6 @@
 extern crate relaxed_ik_lib;
 use relaxed_ik_lib::relaxed_ik;
-use nalgebra::{Vector3, UnitQuaternion, Quaternion};
+use nalgebra::Vector3;
 
 use crate::relaxed_ik_lib::utils_rust::file_utils::{*};
 
