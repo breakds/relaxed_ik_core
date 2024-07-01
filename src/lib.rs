@@ -30,8 +30,10 @@ impl RelaxedIK {
         let position = self.inner.vars.goal_positions[0];
         let quaternion = self.inner.vars.goal_quats[0];
 
-        let position_array = PyArray1::from_vec(py, vec![position.x, position.y, position.z]);
-        let quaternion_array = PyArray1::from_vec(py, vec![quaternion.w, quaternion.i, quaternion.j, quaternion.k]);
+        let position_array = PyArray1::from_vec_bound(
+            py, vec![position.x, position.y, position.z]);
+        let quaternion_array = PyArray1::from_vec_bound(
+            py, vec![quaternion.w, quaternion.i, quaternion.j, quaternion.k]);
 
         Ok(PyTuple::new(py, &[position_array, quaternion_array]))
     }
