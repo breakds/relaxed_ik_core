@@ -1,4 +1,3 @@
-use crate::groove::gradient::{GradientFinder, GradientFinderImmutable};
 use crate::groove::vars::{RelaxedIKVars};
 use optimization_engine::{constraints::*, panoc::*, *};
 use crate::groove::objective_master::ObjectiveMaster;

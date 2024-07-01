@@ -26,7 +26,7 @@ pub fn swamp_loss(x_val: f64, l_bound: f64, u_bound: f64, f1: f64, f2: f64, p1:i
     (f1 + f2 * x.powi(2)) *  (1.0 - (- (x/b).powi(p1)).exp()) - 1.0
 }
 
-pub fn swamp_groove_loss_derivative(x_val: f64, g:f64, l_bound: f64, u_bound: f64, c : f64, f1: f64, f2: f64, f3:f64, p1:i32) -> f64 {
+pub fn swamp_groove_loss_derivative(x_val: f64, _g:f64, l_bound: f64, u_bound: f64, c : f64, f1: f64, f2: f64, f3:f64, p1:i32) -> f64 {
     if (2.0 * x_val - l_bound - u_bound).abs() < 1e-8 {
         return 0.0;
     }
@@ -196,7 +196,7 @@ impl ObjectiveTrait for SelfCollision {
         swamp_loss(dis, 0.02, 1.5, 60.0, 0.0001, 30)
     }
 
-    fn call_lite(&self, x: &[f64], v: &vars::RelaxedIKVars, ee_poses: &Vec<(nalgebra::Vector3<f64>, nalgebra::UnitQuaternion<f64>)>) -> f64 {
+    fn call_lite(&self, x: &[f64], v: &vars::RelaxedIKVars, _ee_poses: &Vec<(nalgebra::Vector3<f64>, nalgebra::UnitQuaternion<f64>)>) -> f64 {
         let x_val = 1.0; // placeholder
         groove_loss(x_val, 0., 2, 2.1, 0.0002, 4)
     }
@@ -264,12 +264,12 @@ impl ObjectiveTrait for SelfCollision {
 
 pub struct MaximizeManipulability;
 impl ObjectiveTrait for MaximizeManipulability {
-    fn call(&self, x: &[f64], v: &vars::RelaxedIKVars, frames: &Vec<(Vec<nalgebra::Vector3<f64>>, Vec<nalgebra::UnitQuaternion<f64>>)>) -> f64 {
+    fn call(&self, x: &[f64], v: &vars::RelaxedIKVars, _frames: &Vec<(Vec<nalgebra::Vector3<f64>>, Vec<nalgebra::UnitQuaternion<f64>>)>) -> f64 {
         let x_val = v.robot.get_manipulability_immutable(&x);
         groove_loss(x_val, 1.0, 2, 0.5, 0.1, 2)
     }
 
-    fn call_lite(&self, x: &[f64], v: &vars::RelaxedIKVars, ee_poses: &Vec<(nalgebra::Vector3<f64>, nalgebra::UnitQuaternion<f64>)>) -> f64 {
+    fn call_lite(&self, _x: &[f64], v: &vars::RelaxedIKVars, _ee_poses: &Vec<(nalgebra::Vector3<f64>, nalgebra::UnitQuaternion<f64>)>) -> f64 {
         0.0
     }
 
@@ -294,7 +294,7 @@ impl ObjectiveTrait for EachJointLimits {
         swamp_loss(x[self.joint_idx], l, u, 10.0, 10.0, 20)
     }
 
-    fn call_lite(&self, x: &[f64], v: &vars::RelaxedIKVars, ee_poses: &Vec<(nalgebra::Vector3<f64>, nalgebra::UnitQuaternion<f64>)>) -> f64 {
+    fn call_lite(&self, _x: &[f64], _v: &vars::RelaxedIKVars, _ee_poses: &Vec<(nalgebra::Vector3<f64>, nalgebra::UnitQuaternion<f64>)>) -> f64 {
         0.0
     }
     fn name(&self) -> &str {
@@ -304,7 +304,7 @@ impl ObjectiveTrait for EachJointLimits {
 
 pub struct MinimizeVelocity;
 impl ObjectiveTrait for MinimizeVelocity {
-    fn call(&self, x: &[f64], v: &vars::RelaxedIKVars, frames: &Vec<(Vec<nalgebra::Vector3<f64>>, Vec<nalgebra::UnitQuaternion<f64>>)>) -> f64 {
+    fn call(&self, x: &[f64], v: &vars::RelaxedIKVars, _frames: &Vec<(Vec<nalgebra::Vector3<f64>>, Vec<nalgebra::UnitQuaternion<f64>>)>) -> f64 {
         let mut x_val = 0.0;
         for i in 0..x.len() {
            x_val += (x[i] - v.xopt[i]).powi(2);

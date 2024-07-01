@@ -21,7 +21,7 @@ pub unsafe extern "C" fn relaxed_ik_new(path_to_setting: *const c_char) -> *mut 
 #[no_mangle] 
 pub unsafe extern "C" fn relaxed_ik_free(ptr: *mut RelaxedIK) {
     if ptr.is_null() { return }
-    Box::from_raw(ptr);
+    let _ = Box::from_raw(ptr);
 }
 
 #[no_mangle]

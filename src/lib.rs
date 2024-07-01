@@ -1,3 +1,7 @@
+#![allow(unused_variables)]
+#![allow(non_snake_case)]
+#![allow(dead_code)]
+#![allow(unused_assignments)]
 pub mod utils_rust;
 pub mod spacetime;
 pub mod groove;
@@ -26,7 +30,7 @@ impl RelaxedIK {
     // is correctly associated with the Python interpreter's lifetime.
 
     #[getter]
-    fn get_current_goal<'py>(&self, py: Python<'py>) -> PyResult<&'py PyTuple> {
+    fn get_current_goal<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyTuple>> {
         let position = self.inner.vars.goal_positions[0];
         let quaternion = self.inner.vars.goal_quats[0];
 
@@ -35,10 +39,13 @@ impl RelaxedIK {
         let quaternion_array = PyArray1::from_vec_bound(
             py, vec![quaternion.w, quaternion.i, quaternion.j, quaternion.k]);
 
-        Ok(PyTuple::new(py, &[position_array, quaternion_array]))
+        Ok(PyTuple::new_bound(py, &[position_array, quaternion_array]))
     }
 
-    pub fn solve<'py>(&mut self, py: Python<'py>, position: &PyArray1<f64>, quaternion: &PyArray1<f64>) -> &'py PyArray1<f64> {
+    pub fn solve<'py>(&mut self,
+                      py: Python<'py>,
+                      position: &PyArray1<f64>,
+                      quaternion: &PyArray1<f64>) -> PyResult<Bound<'py,PyArray1<f64>>> {
         let pos_slice = unsafe { position.as_slice().unwrap() };
         let quat_slice = unsafe { quaternion.as_slice().unwrap() };
 
@@ -48,7 +55,7 @@ impl RelaxedIK {
             Quaternion::new(quat_slice[0], quat_slice[1], quat_slice[2], quat_slice[3]));
         
         let result = self.inner.solve();
-        result.to_pyarray(py)
+        Ok(result.to_pyarray_bound(py))
     }
 }
 
