@@ -7,7 +7,7 @@ if __name__ == "__main__":
     path = "/home/breakds/syncthing/workspace/hobot/relaxed_ik/wx250s.yaml"
     ik = RelaxedIK(path)
     p, q = ik.current_goal
-    np.set_printoptions(precision=3, suppress=True)
+    np.set_printoptions(precision=5, suppress=True)
     print("Initial Pose:", p, q)
     for _ in range(10):
         p += np.array([0., 0.01, 0.])
