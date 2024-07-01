@@ -194,7 +194,7 @@ impl ObjectiveMaster {
 
     fn __gradient_finite_diff(&self, x: &[f64], vars: &RelaxedIKVars) -> (f64, Vec<f64>)  {
         let mut grad: Vec<f64> = vec![0. ; x.len()];
-        let mut f_0 = self.call(x, vars);
+        let f_0 = self.call(x, vars);
 
         for i in 0..x.len() {
             let mut x_h = x.to_vec();
@@ -208,7 +208,7 @@ impl ObjectiveMaster {
 
     fn __gradient_finite_diff_lite(&self, x: &[f64], vars: &RelaxedIKVars) -> (f64, Vec<f64>) {
         let mut grad: Vec<f64> = vec![0. ; x.len()];
-        let mut f_0 = self.call(x, vars);
+        let f_0 = self.call(x, vars);
 
         for i in 0..x.len() {
             let mut x_h = x.to_vec();

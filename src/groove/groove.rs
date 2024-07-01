@@ -1,4 +1,4 @@
-use crate::groove::gradient::{ForwardFiniteDiff, CentralFiniteDiff, GradientFinder, ForwardFiniteDiffImmutable, CentralFiniteDiffImmutable, GradientFinderImmutable};
+use crate::groove::gradient::{GradientFinder, GradientFinderImmutable};
 use crate::groove::vars::{RelaxedIKVars};
 use optimization_engine::{constraints::*, panoc::*, *};
 use crate::groove::objective_master::ObjectiveMaster;
@@ -9,7 +9,7 @@ pub struct OptimizationEngineOpen {
 }
 impl OptimizationEngineOpen {
     pub fn new(dim: usize) -> Self {
-        let mut cache = PANOCCache::new(dim, 1e-14, 10);
+        let cache = PANOCCache::new(dim, 1e-14, 10);
         OptimizationEngineOpen { dim, cache }
     }
 

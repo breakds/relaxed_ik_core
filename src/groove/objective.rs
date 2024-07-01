@@ -1,11 +1,7 @@
 use crate::groove::{vars};
 use crate::utils_rust::transformations::{*};
-use nalgebra::geometry::{Translation3, UnitQuaternion, Quaternion};
-use std::cmp;
-use crate::groove::vars::RelaxedIKVars;
-use nalgebra::{Vector3, Isometry3, Point3};
-use std::ops::Deref;
-use time::PreciseTime;
+use nalgebra::geometry::{UnitQuaternion, Quaternion};
+use nalgebra::Point3;
 use parry3d_f64::{shape, query};
 
 pub fn groove_loss(x_val: f64, t: f64, d: i32, c: f64, f: f64, g: i32) -> f64 {
@@ -102,7 +98,7 @@ impl ObjectiveTrait for MatchEEPosiDoF {
 
         let bound =  v.tolerances[self.arm_idx][self.axis];
 
-        if (bound <= 1e-2) {
+        if bound <= 1e-2 {
             groove_loss(dist, 0., 2, 0.1, 10.0, 2)
         } else {
             swamp_groove_loss(dist, 0.0, -bound, bound, bound*2.0, 1.0, 0.01, 100.0, 20) 
@@ -142,7 +138,7 @@ impl ObjectiveTrait for MatchEERotaDoF {
 
         let bound =  v.tolerances[self.arm_idx][self.axis + 3];
 
-        if (bound <= 1e-2) {
+        if bound <= 1e-2 {
             groove_loss(angle, 0., 2, 0.1, 10.0, 2)
         } else {
             if bound >= 3.14159260 {
@@ -175,20 +171,20 @@ impl SelfCollision {
 impl ObjectiveTrait for SelfCollision {
     fn call(&self, x: &[f64], v: &vars::RelaxedIKVars, frames: &Vec<(Vec<nalgebra::Vector3<f64>>, Vec<nalgebra::UnitQuaternion<f64>>)>) -> f64 {
         for i in 0..x.len() {
-            if (x[i].is_nan()) {
+            if x[i].is_nan() {
                 return 10.0
             }
         }
        
-        let mut x_val: f64 = 0.0;
+        let x_val: f64 = 0.0;
         let link_radius = 0.05;
 
         let start_pt_1 = Point3::from(frames[self.arm_idx].0[self.first_link]);
         let end_pt_1 = Point3::from(frames[self.arm_idx].0[self.first_link+1]);
         let segment_1 = shape::Segment::new(start_pt_1, end_pt_1);
 
-        let mut start_pt_2 = Point3::from(frames[self.arm_idx].0[self.second_link]);
-        let mut end_pt_2 = Point3::from(frames[self.arm_idx].0[self.second_link+1]);
+        let start_pt_2 = Point3::from(frames[self.arm_idx].0[self.second_link]);
+        let end_pt_2 = Point3::from(frames[self.arm_idx].0[self.second_link+1]);
 
         let segment_2 = shape::Segment::new(start_pt_2, end_pt_2);
 

@@ -1,9 +1,6 @@
 use crate::groove::vars::RelaxedIKVars;
 use crate::groove::groove::{OptimizationEngineOpen};
 use crate::groove::objective_master::ObjectiveMaster;
-use crate::utils_rust::file_utils::{*};
-use crate::utils_rust::transformations::{*};
-use nalgebra::{Vector3, UnitQuaternion, Quaternion};
 use std::os::raw::{c_double, c_int};
 
 #[repr(C)]
@@ -43,7 +40,7 @@ impl RelaxedIK {
         let frames = self.vars.robot.get_frames_immutable(&out_x);
 
         for i in 0..out_x.len() {
-            if (out_x[i].is_nan()) {
+            if out_x[i].is_nan() {
                 println!("No valid solution found! Returning previous solution: {:?}. End effector position goals: {:?}", self.vars.xopt, self.vars.goal_positions);
                 return self.vars.xopt.clone();
             }

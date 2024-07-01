@@ -1,10 +1,9 @@
 use std::env;
 use std::fs::File;
 use std::io::prelude::*;
-use std::fs::read_dir;
 use std::path::Path;
 use path_slash::PathBufExt;
-use yaml_rust::{YamlLoader, Yaml};
+use yaml_rust::YamlLoader;
 
 pub fn get_path_to_src() -> String {
     let path = env::current_dir().unwrap();

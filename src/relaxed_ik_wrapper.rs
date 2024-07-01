@@ -1,8 +1,6 @@
 use crate::relaxed_ik::{RelaxedIK, Opt};
-use std::sync::{Arc, Mutex};
-use nalgebra::{Vector3, Vector6, UnitQuaternion, Quaternion,Translation3, Isometry3};
+use nalgebra::{Vector3, Vector6, UnitQuaternion, Quaternion};
 use std::os::raw::{*};
-use std::str;
 use crate::utils_rust::file_utils::{*};
 
 // http://jakegoulding.com/rust-ffi-omnibus/objects/

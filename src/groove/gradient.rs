@@ -51,7 +51,7 @@ where F: Fn(&[f64]) -> f64
         let mut out: Vec<f64> = Vec::new();
         let val_0 = (self.f)(x);
         for i in 0..x.len() {
-            let mut x_h = x.clone().to_vec();
+            let mut x_h = x.to_vec();
             x_h[i] += self.h;
             out.push((-val_0 + (self.f)(x_h.as_slice())) / self.h);
         }
@@ -113,8 +113,8 @@ where F: Fn(&[f64]) -> f64
     fn compute_gradient_immutable(&self, x: &[f64]) -> Vec<f64> {
         let mut out: Vec<f64> = Vec::new();
         for (i, val) in x.iter().enumerate() {
-            let mut x_hf = x.clone().to_vec();
-            let mut x_hb = x.clone().to_vec();
+            let mut x_hf = x.to_vec();
+            let mut x_hb = x.to_vec();
             x_hf[i] += self.h;
             x_hb[i] -= self.h;
             out.push( (-0.5 * (self.f)(x_hb.as_slice()) + 0.5 * (self.f)(x_hf.as_slice())) / self.h);
@@ -191,10 +191,10 @@ where F: Fn(&[f64]) -> f64
     fn compute_gradient_immutable(&self, x: &[f64]) -> Vec<f64> {
         let mut out: Vec<f64> = Vec::new();
         for (i, val) in x.iter().enumerate() {
-            let mut x_hf1 = x.clone().to_vec();
-            let mut x_hb1 = x.clone().to_vec();
-            let mut x_hf2 = x.clone().to_vec();
-            let mut x_hb2 = x.clone().to_vec();
+            let mut x_hf1 = x.to_vec();
+            let mut x_hb1 = x.to_vec();
+            let mut x_hf2 = x.to_vec();
+            let mut x_hb2 = x.to_vec();
             x_hf1[i] += self.h;
             x_hb1[i] -= self.h;
             x_hf2[i] += 2.0*self.h;

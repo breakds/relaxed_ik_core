@@ -1,5 +1,5 @@
 use nalgebra;
-use nalgebra::{Vector3, Vector6, UnitQuaternion, Unit, Matrix, DMatrix, DVector, ArrayStorage};
+use nalgebra::{Vector3, Vector6, UnitQuaternion, DMatrix};
 
 #[derive(Clone, Debug)]
 pub struct Arm {
