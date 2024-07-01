@@ -101,7 +101,7 @@
     </inertial>
   </link>
   <joint name="elbow" type="revolute">
-    <axis xyz="0 1 0"/>
+    <axis xyz="0 -1 0"/>
     <limit effort="100" lower="-1.6057029118347832" upper="2.1467549799530254" velocity="3.141592653589793"/>
     <origin rpy="3.141592653589793 0 0" xyz="0.04975 0 0.25"/>
     <parent link="/upper_arm_link"/>
@@ -173,7 +173,7 @@
     </inertial>
   </link>
   <joint name="wrist_angle" type="revolute">
-    <axis xyz="0 1 0"/>
+    <axis xyz="0 -1 0"/>
     <limit effort="100" lower="-2.1467549799530254" upper="1.7453292519943295" velocity="3.141592653589793"/>
     <origin rpy="0 0 0" xyz="0.075 0 0"/>
     <parent link="/lower_forearm_link"/>
