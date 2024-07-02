@@ -11,13 +11,15 @@ pub mod relaxed_ik_web;
 
 use pyo3::prelude::*;
 use pyo3::types::PyTuple;
-use numpy::{PyArray1, ToPyArray};
+use numpy::{PyArray1, ToPyArray, PyReadonlyArray1};
 use nalgebra::{Vector3, UnitQuaternion, Quaternion};
+
 
 #[pyclass]
 struct RelaxedIK {
     inner: relaxed_ik::RelaxedIK,
 }
+
 
 #[pymethods]
 impl RelaxedIK {
@@ -31,21 +33,20 @@ impl RelaxedIK {
 
     #[getter]
     fn get_current_goal<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyTuple>> {
-        let position = self.inner.vars.goal_positions[0];
-        let quaternion = self.inner.vars.goal_quats[0];
+        let p = self.inner.vars.goal_positions[0];
+        let q = self.inner.vars.goal_quats[0];
 
-        let position_array = PyArray1::from_vec_bound(
-            py, vec![position.x, position.y, position.z]);
-        let quaternion_array = PyArray1::from_vec_bound(
-            py, vec![quaternion.w, quaternion.i, quaternion.j, quaternion.k]);
-
-        Ok(PyTuple::new_bound(py, &[position_array, quaternion_array]))
+        let p_array = PyArray1::from_slice_bound(py, &[p.x, p.y, p.z]);
+        let q_array = PyArray1::from_slice_bound(py, &[q.w, q.i, q.j, q.k]);
+        Ok(PyTuple::new_bound(py, &[p_array, q_array]))
     }
 
-    pub fn solve<'py>(&mut self,
-                      py: Python<'py>,
-                      position: &PyArray1<f64>,
-                      quaternion: &PyArray1<f64>) -> PyResult<Bound<'py,PyArray1<f64>>> {
+    pub fn solve<'py>(
+        &mut self,
+        py: Python<'py>,
+        position: &PyArray1<f64>,
+        quaternion: &PyArray1<f64>
+    ) -> PyResult<Bound<'py, PyArray1<f64>>> {
         let pos_slice = unsafe { position.as_slice().unwrap() };
         let quat_slice = unsafe { quaternion.as_slice().unwrap() };
 
@@ -53,9 +54,21 @@ impl RelaxedIK {
             pos_slice[0], pos_slice[1], pos_slice[2]);
         self.inner.vars.goal_quats[0] = UnitQuaternion::from_quaternion(
             Quaternion::new(quat_slice[0], quat_slice[1], quat_slice[2], quat_slice[3]));
-        
+
         let result = self.inner.solve();
         Ok(result.to_pyarray_bound(py))
+    }
+
+    pub fn forward<'py>(
+        &mut self,
+        py: Python<'py>,
+        jointpos: PyReadonlyArray1<'py, f64>
+    ) -> PyResult<Bound<'py, PyTuple>> {
+        let x: Vec<f64> = jointpos.as_array().to_vec();
+        let (p, q)  = self.inner.vars.robot.arms[0].get_ee_pos_and_quat_immutable(&x);
+        let p_array = PyArray1::from_slice_bound(py, &[p.x, p.y, p.z]);
+        let q_array = PyArray1::from_slice_bound(py, &[q.w, q.i, q.j, q.k]);
+        return Ok(PyTuple::new_bound(py, &[p_array, q_array]));
     }
 }
 
