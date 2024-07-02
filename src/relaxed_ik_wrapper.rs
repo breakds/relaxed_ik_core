@@ -178,7 +178,7 @@ fn solve_position_helper(relaxed_ik: &mut RelaxedIK, pos_goals: Vec<f64>, quat_g
             tolerance[6*i+3], tolerance[6*i+4], tolerance[6*i+5])
     }
                     
-    let x = relaxed_ik.solve();
+    let (x, _) = relaxed_ik.solve();
     return x;
 }
 
@@ -195,7 +195,7 @@ fn solve_velocity_helper(relaxed_ik: &mut RelaxedIK, pos_vels: Vec<f64>, rot_vel
             tolerance[3*i+3], tolerance[3*i+4], tolerance[3*i+5])
     }
 
-    let x = relaxed_ik.solve();
+    let (x, _) = relaxed_ik.solve();
 
 
     let frames = relaxed_ik.vars.robot.get_frames_immutable(&x);

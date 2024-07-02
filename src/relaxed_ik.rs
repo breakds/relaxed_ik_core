@@ -15,6 +15,14 @@ pub struct RelaxedIK {
     pub groove: OptimizationEngineOpen
 }
 
+
+#[derive(Debug)]
+pub enum SolutionQuality {
+    Failed,
+    NotConverged,
+    Success,
+}
+
 impl RelaxedIK {
     pub fn load_settings( path_to_setting: &str) -> Self {
         println!("RelaxedIK is using below setting file {}", path_to_setting);
@@ -31,21 +39,27 @@ impl RelaxedIK {
         self.vars.reset( x.clone());
     }
 
-    pub fn solve(&mut self) -> Vec<f64> {
+    pub fn solve(&mut self) -> (Vec<f64>, SolutionQuality) {
         let mut out_x = self.vars.xopt.clone();
 
 
-        self.groove.optimize(&mut out_x, &self.vars, &self.om, 100);
-        
-        let frames = self.vars.robot.get_frames_immutable(&out_x);
+        let status = self.groove.optimize(&mut out_x, &self.vars, &self.om, 100);
 
-        for i in 0..out_x.len() {
-            if out_x[i].is_nan() {
-                println!("No valid solution found! Returning previous solution: {:?}. End effector position goals: {:?}", self.vars.xopt, self.vars.goal_positions);
-                return self.vars.xopt.clone();
+        match status {
+            Ok(solver_status) => {
+                let frames = self.vars.robot.get_frames_immutable(&out_x);
+                for i in 0..out_x.len() {
+                    if out_x[i].is_nan() {
+                        return (self.vars.xopt.clone(), SolutionQuality::Failed);
+                    }
+                }
+                self.vars.update(out_x.clone());
+                (out_x, if solver_status.has_converged() {
+                    SolutionQuality::Success } else { SolutionQuality::NotConverged })
+            }
+            Err(solver_error) => {
+                (self.vars.xopt.clone(), SolutionQuality::Failed)
             }
         }
-        self.vars.update(out_x.clone());  
-        out_x
     }
 }

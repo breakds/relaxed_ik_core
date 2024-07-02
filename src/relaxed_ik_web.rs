@@ -97,7 +97,7 @@ impl RelaxedIK {
             self.vars.tolerances[i] = tolerances[i].clone();
         }
 
-        self.groove.optimize(&mut out_x, &self.vars, &self.om, 100);
+        let _ = self.groove.optimize(&mut out_x, &self.vars, &self.om, 100);
         self.vars.update(out_x.clone());
 
         out_x.into_iter().map(JsValue::from).collect()

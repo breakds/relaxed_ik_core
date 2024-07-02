@@ -46,7 +46,7 @@ impl RelaxedIK {
         py: Python<'py>,
         position: &PyArray1<f64>,
         quaternion: &PyArray1<f64>
-    ) -> PyResult<Bound<'py, PyArray1<f64>>> {
+    ) -> PyResult<(Bound<'py, PyArray1<f64>>, String)> {
         let pos_slice = unsafe { position.as_slice().unwrap() };
         let quat_slice = unsafe { quaternion.as_slice().unwrap() };
 
@@ -55,8 +55,13 @@ impl RelaxedIK {
         self.inner.vars.goal_quats[0] = UnitQuaternion::from_quaternion(
             Quaternion::new(quat_slice[0], quat_slice[1], quat_slice[2], quat_slice[3]));
 
-        let result = self.inner.solve();
-        Ok(result.to_pyarray_bound(py))
+        let (x, quality) = self.inner.solve();
+        let quality_str = match quality {
+            relaxed_ik::SolutionQuality::Failed => "Failed",
+            relaxed_ik::SolutionQuality::NotConverged => "NotConverged",
+            relaxed_ik::SolutionQuality::Success => "Success",
+        }.to_string();
+        Ok((x.to_pyarray_bound(py), quality_str))
     }
 
     pub fn forward<'py>(
