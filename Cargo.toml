@@ -1,6 +1,6 @@
 [package]
 name = "relaxed_ik_core"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["djrakita <djrakita@gmail.com>", "yepw <yepingw@outlook.com>"]
 edition = "2021"
 
