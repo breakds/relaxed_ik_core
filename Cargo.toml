@@ -1,8 +1,8 @@
 [package]
 name = "relaxed_ik_core"
-version = "0.1.3"
+version = "0.1.4"
 authors = ["djrakita <djrakita@gmail.com>", "yepw <yepingw@outlook.com>"]
-edition = "2024"
+edition = "2021"
 
 [package.metadata.pyo3]
 name = "relaxed_ik"
