@@ -11,5 +11,8 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dynamic = ["version"]
+description = "RangedIK is a real-time motion synthesis method that exploits range flexibility to satisfy multiple kinematic requirements."
+readme = "README.md"
+readme-content-type = "text/markdown"
 [tool.maturin]
 features = ["pyo3/extension-module"]
